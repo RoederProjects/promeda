@@ -1,5 +1,5 @@
 package core.entities.bricks;
 
-public class ArtImage {
+public class MedVideo {
 
 }

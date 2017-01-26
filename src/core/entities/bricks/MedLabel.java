@@ -1,5 +1,5 @@
 package core.entities.bricks;
 
-public class ArtAttachment {
+public class MedLabel {
 
 }
