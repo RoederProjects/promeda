@@ -30,11 +30,15 @@ import javax.swing.JScrollPane;
 import java.awt.Font;
 import javax.swing.JMenuItem;
 import javax.swing.SwingConstants;
+import javax.swing.JMenuBar;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.ButtonGroup;
 
 public class MainView extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	/**
 	 * Launch the application.
@@ -60,7 +64,7 @@ public class MainView extends JFrame {
 		setLocationByPlatform(true);
 		setSize(new Dimension(1200, 880));
 		setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
-		setTitle("PROMEDA | Media Panel");
+		setTitle("PROMEDA |old-version");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1240, 801);
 		contentPane = new JPanel();
@@ -108,6 +112,7 @@ public class MainView extends JFrame {
 		pnl_topBar.add(pnl_topNav);
 		
 		JMenu mn_media = new JMenu("MEDIA");
+		mn_media.setArmed(true);
 		mn_media.setFont(new Font("Microsoft Sans Serif", Font.BOLD, 18));
 		mn_media.setForeground(Color.WHITE);
 		
@@ -175,9 +180,54 @@ public class MainView extends JFrame {
 		panel_4.setLayout(null);
 		
 		JPanel panel_5 = new JPanel();
+		panel_5.setBackground(new Color(0, 0, 255));
 		panel_5.setBounds(10, 11, 376, 244);
 		panel_4.add(panel_5);
 		panel_5.setLayout(null);
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setOpaque(false);
+		menuBar.setBackground(new Color(0, 102, 102));
+		menuBar.setBounds(0, 0, 97, 65);
+		panel_5.add(menuBar);
+		{
+			JMenu mnMedia = new JMenu("Media");
+			mnMedia.setContentAreaFilled(false);
+			mnMedia.setBackground(new Color(0, 102, 102));
+			menuBar.add(mnMedia);
+			{
+				JMenu mnImages = new JMenu("Images");
+				mnImages.setOpaque(true);
+				mnImages.setBackground(new Color(204, 0, 102));
+				mnMedia.add(mnImages);
+				{
+					JMenuItem mntmCreateFromOriginals = new JMenuItem("Create from originals");
+					mnImages.add(mntmCreateFromOriginals);
+				}
+			}
+			{
+				JMenu mnVideos = new JMenu("Videos");
+				mnMedia.add(mnVideos);
+			}
+		}
+		{
+			JMenu mnSettigns = new JMenu("Settigns");
+			menuBar.add(mnSettigns);
+			{
+				JCheckBoxMenuItem chckbxmntmDingsa = new JCheckBoxMenuItem("DingsA");
+				buttonGroup.add(chckbxmntmDingsa);
+				mnSettigns.add(chckbxmntmDingsa);
+			}
+			{
+				JCheckBoxMenuItem chckbxmntmDingsb = new JCheckBoxMenuItem("DingsB");
+				chckbxmntmDingsb.setSelected(true);
+				mnSettigns.add(chckbxmntmDingsb);
+			}
+			{
+				JCheckBoxMenuItem chckbxmntmDingsc = new JCheckBoxMenuItem("DingsC");
+				mnSettigns.add(chckbxmntmDingsc);
+			}
+		}
 		
 		JPanel panel_6 = new JPanel();
 		panel_6.setBounds(10, 332, 862, 292);

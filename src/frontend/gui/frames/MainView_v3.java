@@ -41,8 +41,10 @@ import javax.swing.JPopupMenu;
 import java.awt.Cursor;
 import javax.swing.ImageIcon;
 import javax.swing.JSeparator;
+import javax.swing.JMenuBar;
+import javax.swing.JCheckBoxMenuItem;
 
-public class MainView_v2 extends JFrame {
+public class MainView_v3 extends JFrame {
 
 	private JPanel contentPane;
 	private JTextField textField;
@@ -55,7 +57,7 @@ public class MainView_v2 extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					MainView_v2 frame = new MainView_v2();
+					MainView_v3 frame = new MainView_v3();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -67,7 +69,7 @@ public class MainView_v2 extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public MainView_v2() {
+	public MainView_v3() {
 		setResizable(false);
 		setLocationByPlatform(true);
 		setSize(new Dimension(1200, 880));
@@ -123,13 +125,16 @@ public class MainView_v2 extends JFrame {
 		pnl_searchBar.setLayout(null);
 		
 		JButton btnNewButton = new JButton(">>");
+		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnNewButton.setForeground(new Color(255, 255, 255));
+		btnNewButton.setBackground(new Color(102, 102, 102));
 		btnNewButton.setBorder(new LineBorder(Color.WHITE, 4, true));
-		btnNewButton.setBounds(158, 8, 60, 24);
+		btnNewButton.setBounds(175, 0, 52, 40);
 		pnl_searchBar.add(btnNewButton);
 		
 		textField = new JTextField();
 		textField.setBorder(new LineBorder(Color.WHITE, 4, true));
-		textField.setBounds(8, 8, 150, 24);
+		textField.setBounds(0, 0, 178, 40);
 		textField.setColumns(10);
 		pnl_searchBar.add(textField);
 		
@@ -137,75 +142,120 @@ public class MainView_v2 extends JFrame {
 		pnl_NavBar.setOpaque(false);
 		pnl_NavBar.setBounds(322, 0, 892, 40);
 		pnl_topBar.add(pnl_NavBar);
-		JButton btn_navSettings = new JButton("SETTINGS");
-		btn_navSettings.setBorderPainted(false);
-		btn_navSettings.setBorder(null);
-		btn_navSettings.setContentAreaFilled(false);
-		btn_navSettings.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btn_navSettings.setBounds(161, 0, 139, 40);
-		btn_navSettings.setFont(new Font("Trebuchet MS", Font.BOLD, 18));
-		btn_navSettings.setForeground(new Color(255, 255, 255));
-		JButton btn_navMedia = new JButton("MEDIA");
-		btn_navMedia.setBorderPainted(false);
-		btn_navMedia.setIcon(new ImageIcon(MainView_v2.class.getResource("/res/icons/icon_navMedia.png")));
-		btn_navMedia.setFocusPainted(false);
-		btn_navMedia.setBorder(null);
-		btn_navMedia.setFont(new Font("Trebuchet MS", Font.BOLD, 18));
-		btn_navMedia.setContentAreaFilled(false);
-		btn_navMedia.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btn_navMedia.setBounds(0, 0, 139, 40);
-		btn_navMedia.setForeground(new Color(255, 255, 255));
-		JButton btn_navADHS = new JButton("A.D.H.S");
-		btn_navADHS.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btn_navADHS.setAlignmentY(Component.TOP_ALIGNMENT);
-		btn_navADHS.setBounds(321, 0, 120, 40);
-		btn_navADHS.setForeground(new Color(255, 255, 255));
-		btn_navADHS.setFont(new Font("Trebuchet MS", Font.BOLD, 18));
-		btn_navADHS.setContentAreaFilled(false);
-		btn_navADHS.setBorderPainted(false);
-		JButton btn_navInfo = new JButton("INFO");
-		btn_navInfo.setContentAreaFilled(false);
-		btn_navInfo.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		btn_navInfo.setAlignmentY(Component.TOP_ALIGNMENT);
-		btn_navInfo.setBounds(463, 0, 108, 40);
-		btn_navInfo.setForeground(Color.WHITE);
-		btn_navInfo.setFont(new Font("Trebuchet MS", Font.BOLD, 18));
-		btn_navInfo.setBorderPainted(false);
 		pnl_NavBar.setLayout(null);
-		pnl_NavBar.add(btn_navMedia);
+		
+		JMenuBar menuBar = new JMenuBar();
+		menuBar.setBorder(new LineBorder(new Color(0, 102, 102), 2));
+		menuBar.setBounds(0, 0, 892, 40);
+		pnl_NavBar.add(menuBar);
+		
+		JMenu mnMedia = new JMenu("MEDIA");
+		mnMedia.setFont(new Font("Open Sans", Font.BOLD, 18));
+		mnMedia.setBorder(null);
+		menuBar.add(mnMedia);
+		
+		JMenu mnImages_1 = new JMenu("Images");
+		mnMedia.add(mnImages_1);
+		
+		JMenuItem mntmRegenerateFromOriginals = new JMenuItem("Regenerate from backup (.psd)");
+		mnImages_1.add(mntmRegenerateFromOriginals);
+		
+		JMenuItem mntmNewMenuItem = new JMenuItem("Generate from local (.psd)");
+		mnImages_1.add(mntmNewMenuItem);
+		
+		JMenu mnVideos = new JMenu("Videos");
+		mnMedia.add(mnVideos);
+		
+		JMenu mnLabels = new JMenu("Labels");
+		mnMedia.add(mnLabels);
+		
+		JMenu mnAttachments = new JMenu("Attachments");
+		mnMedia.add(mnAttachments);
 		{
-			JSeparator separator = new JSeparator();
-			separator.setBounds(149, 0, 2, 40);
-			pnl_NavBar.add(separator);
-			separator.setForeground(new Color(255, 255, 255));
-			separator.setOrientation(SwingConstants.VERTICAL);
+			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+			menuBar.add(rigidArea);
 		}
-		pnl_NavBar.add(btn_navSettings);
-		pnl_NavBar.add(btn_navADHS);
-		pnl_NavBar.add(btn_navInfo);
+		
+		JMenu mnSettigns = new JMenu("SETTINGS");
+		mnSettigns.setBorder(null);
+		mnSettigns.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnSettigns);
 		{
-			JButton button = new JButton("LOGOUT");
-			button.setForeground(Color.WHITE);
-			button.setFont(new Font("Trebuchet MS", Font.BOLD, 18));
-			button.setContentAreaFilled(false);
-			button.setBorderPainted(false);
-			button.setAlignmentY(0.0f);
-			button.setBounds(725, 0, 167, 40);
-			pnl_NavBar.add(button);
+			JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("New check item");
+			mnSettigns.add(chckbxmntmNewCheckItem);
 		}
 		{
-			JSeparator separator = new JSeparator();
-			separator.setOrientation(SwingConstants.VERTICAL);
-			separator.setForeground(Color.WHITE);
-			separator.setBounds(309, 0, 2, 40);
-			pnl_NavBar.add(separator);
+			JCheckBoxMenuItem chckbxmntmNewCheckItem_1 = new JCheckBoxMenuItem("New check item");
+			mnSettigns.add(chckbxmntmNewCheckItem_1);
 		}
 		{
-			JSeparator separator = new JSeparator();
-			separator.setOrientation(SwingConstants.VERTICAL);
-			separator.setForeground(Color.WHITE);
-			separator.setBounds(451, 0, 2, 40);
-			pnl_NavBar.add(separator);
+			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+			menuBar.add(rigidArea);
+		}
+		
+		JMenu mnAdhs = new JMenu("A.D.H.S");
+		mnAdhs.setBorder(null);
+		mnAdhs.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnAdhs);
+		{
+			JMenuItem mntmRunAdhs = new JMenuItem("Run A.D.H.S");
+			mnAdhs.add(mntmRunAdhs);
+		}
+		{
+			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+			menuBar.add(rigidArea);
+		}
+		
+		JMenu mnInfo = new JMenu("INFO");
+		mnInfo.setBorder(null);
+		mnInfo.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnInfo);
+		{
+			JMenuItem mntmHelp = new JMenuItem("Help");
+			mnInfo.add(mntmHelp);
+		}
+		{
+			JMenuItem mntmAbout = new JMenuItem("About");
+			mnInfo.add(mntmAbout);
+		}
+		{
+			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+			menuBar.add(rigidArea);
+		}
+		
+		JMenu mnUserprofile = new JMenu("USER-PROFILE");
+		mnUserprofile.setBorder(null);
+		mnUserprofile.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnUserprofile);
+		{
+			JMenuItem mntmLogout = new JMenuItem("Logout");
+			mnUserprofile.add(mntmLogout);
+		}
+		{
+			JMenuItem mntmExit = new JMenuItem("Exit");
+			mnUserprofile.add(mntmExit);
+		}
+		{
+			Component rigidArea = Box.createRigidArea(new Dimension(291, 20));
+			menuBar.add(rigidArea);
+		}
+		{
+			JMenu mnSystem = new JMenu("SYSTEM");
+			mnSystem.setBorder(null);
+			mnSystem.setFont(new Font("Open Sans", Font.BOLD, 18));
+			menuBar.add(mnSystem);
+			{
+				JMenuItem mntmStores = new JMenuItem("Stores");
+				mnSystem.add(mntmStores);
+			}
+			{
+				JMenu mnRemoteConfig = new JMenu("Remote Config");
+				mnSystem.add(mnRemoteConfig);
+				{
+					JMenuItem mntmPromond = new JMenuItem("Promond");
+					mnRemoteConfig.add(mntmPromond);
+				}
+			}
 		}
 		
 		JPanel pnl_contentWrap = new JPanel();
@@ -271,7 +321,7 @@ public class MainView_v2 extends JFrame {
 
 	    private void checkPopup(MouseEvent e) {
 	      if (e.isPopupTrigger()) {
-	        pop_navMedia.show(MainView_v2.this, e.getX(), e.getY());
+	        pop_navMedia.show(MainView_v3.this, e.getX(), e.getY());
 	      }
 	    }
 	  }
