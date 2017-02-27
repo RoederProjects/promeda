@@ -3,6 +3,7 @@ package ui.frames;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.naming.ldap.Rdn;
 import javax.swing.Box;
 import java.awt.Component;
 import javax.swing.JTextField;
@@ -26,32 +27,51 @@ import java.awt.Insets;
 import javax.swing.SwingConstants;
 import javax.swing.border.MatteBorder;
 
-import ui.controller.MainViewController;
+import ui.controller.MainController;
 
 import javax.swing.JTabbedPane;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.tree.DefaultTreeModel;
+
+import modules.products.service.SvcAttachment;
+import modules.products.service.SvcImage;
+import modules.products.service.SvcLabel;
+import modules.products.service.SvcVideo;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.ButtonGroup;
 
 public class MainView extends JFrame {
 
-	private MainViewController controller;
 	private JPanel contentPane;
 	private JTextField txtf_searchField;
 	private JTree tree_entities;
-
+	private JTabbedPane tabbedPane_treeNodeMediaModules;
+	/**
+	 * @wbp.nonvisual location=22,829
+	 */
+	private final ButtonGroup btnGrp_adminpanels = new ButtonGroup();
+	private JRadioButtonMenuItem rdbtnmntm_adminpanelArticles;
+	private JRadioButtonMenuItem rdbtnmntm_adminpanelBrands;
+	private JLabel lbl_ArticleImageViewport;
+	private JList list_ArticleImages;
+	private JButton btnNewButton;
+	
 	public MainView() {
 
 		/**
-		 * Init Controller
+		 * Init Controller and Modules
 		 */
-		controller = new MainViewController();
+		//controller = new MainViewController();
+	
 		/**
 		 * Create the frame.
 		 */
-		
 		compCreate();
 		compCustomSetup();
 	}
@@ -109,19 +129,14 @@ public class MainView extends JFrame {
 		pnl_searchBar.setLayout(null);
 		
 		txtf_searchField = new JTextField();
-		txtf_searchField.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				//tree_entities.setModel(controller.updateTree(controller.search(txtf_searchField.getText())));
-				tree_entities.setModel(controller.updateTree(controller.search(txtf_searchField.getText())));
-			}
-		});
+	
 		txtf_searchField.setBackground(new Color(255, 255, 255));
 		txtf_searchField.setBounds(0, 0, 154, 36);
 		pnl_searchBar.add(txtf_searchField);
 		txtf_searchField.setBorder(new CompoundBorder(new EmptyBorder(4, 0, 4, 0), new LineBorder(new Color(51, 204, 255), 2)));
 		txtf_searchField.setColumns(10);
 		
-		JButton btnNewButton = new JButton("");
+		btnNewButton = new JButton("");
 		btnNewButton.setHorizontalAlignment(SwingConstants.LEFT);
 		btnNewButton.setVerticalAlignment(SwingConstants.TOP);
 		btnNewButton.setOpaque(false);
@@ -132,8 +147,8 @@ public class MainView extends JFrame {
 		btnNewButton.setFocusPainted(false);
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				//tree_entities.setModel(controller.updateTree(controller.search(txtf_searchField.getText())));
-					tree_entities.setModel(controller.updateTree(controller.search(txtf_searchField.getText())));
+				//controller.updateTree(tree_entities, txtf_searchField.getText());
+				tabbedPane_treeNodeMediaModules.setEnabled(false);
 			}
 		});
 		btnNewButton.setIcon(new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_search.png")));
@@ -145,45 +160,18 @@ public class MainView extends JFrame {
 		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 18));
 		btnNewButton.setForeground(new Color(255, 255, 255));
 		
-		Component rigidArea_2 = Box.createRigidArea(new Dimension(99, 20));
-		menuBar.add(rigidArea_2);
+		JMenu mnSettigns = new JMenu("PANELS");
+		mnSettigns.setBorder(null);
+		mnSettigns.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnSettigns);
 		{
-			JMenu menu = new JMenu("MODULES");
-			menu.setFont(new Font("Open Sans", Font.BOLD, 18));
-			menu.setBorder(null);
-			menuBar.add(menu);
-			{
-				JMenu menu_1 = new JMenu("Article-Administration");
-				menu.add(menu_1);
-				{
-					JMenu menu_2 = new JMenu("Images");
-					menu_1.add(menu_2);
-					{
-						JMenuItem menuItem = new JMenuItem("Regenerate from backup (.psd)");
-						menu_2.add(menuItem);
-					}
-					{
-						JMenuItem menuItem = new JMenuItem("Generate from local (.psd)");
-						menu_2.add(menuItem);
-					}
-				}
-				{
-					JMenu menu_2 = new JMenu("Videos");
-					menu_1.add(menu_2);
-				}
-				{
-					JMenu menu_2 = new JMenu("Labels");
-					menu_1.add(menu_2);
-				}
-				{
-					JMenu menu_2 = new JMenu("Attachments");
-					menu_1.add(menu_2);
-				}
-			}
-			{
-				JMenu menu_1 = new JMenu("Brand-Administration");
-				menu.add(menu_1);
-			}
+			rdbtnmntm_adminpanelArticles = new JRadioButtonMenuItem("Articles-board");
+			rdbtnmntm_adminpanelArticles.setSelected(true);
+			mnSettigns.add(rdbtnmntm_adminpanelArticles);
+		}
+		{
+			rdbtnmntm_adminpanelBrands = new JRadioButtonMenuItem("Brands-board");
+			mnSettigns.add(rdbtnmntm_adminpanelBrands);
 		}
 		{
 			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
@@ -246,35 +234,6 @@ public class MainView extends JFrame {
 		
 		JMenu mnAttachmentwizard = new JMenu("AttachmentWizard");
 		mnTools.add(mnAttachmentwizard);
-		
-		Component rigidArea_1 = Box.createRigidArea(new Dimension(20, 20));
-		menuBar.add(rigidArea_1);
-		
-		JMenu mnSettigns = new JMenu("SETTINGS");
-		mnSettigns.setBorder(null);
-		mnSettigns.setFont(new Font("Open Sans", Font.BOLD, 18));
-		menuBar.add(mnSettigns);
-		{
-			JCheckBoxMenuItem chckbxmntmNewCheckItem = new JCheckBoxMenuItem("New check item");
-			mnSettigns.add(chckbxmntmNewCheckItem);
-		}
-		{
-			JCheckBoxMenuItem chckbxmntmNewCheckItem_1 = new JCheckBoxMenuItem("New check item");
-			mnSettigns.add(chckbxmntmNewCheckItem_1);
-		}
-		{
-			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
-			menuBar.add(rigidArea);
-		}
-		
-		JMenu mnAdhs = new JMenu("A.D.H.S");
-		mnAdhs.setBorder(null);
-		mnAdhs.setFont(new Font("Open Sans", Font.BOLD, 18));
-		menuBar.add(mnAdhs);
-		{
-			JMenuItem mntmRunAdhs = new JMenuItem("Run A.D.H.S");
-			mnAdhs.add(mntmRunAdhs);
-		}
 		{
 			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
 			menuBar.add(rigidArea);
@@ -310,7 +269,7 @@ public class MainView extends JFrame {
 			mnUserprofile.add(mntmExit);
 		}
 		{
-			Component rigidArea = Box.createRigidArea(new Dimension(106, 20));
+			Component rigidArea = Box.createRigidArea(new Dimension(328, 20));
 			menuBar.add(rigidArea);
 		}
 		{
@@ -344,95 +303,90 @@ public class MainView extends JFrame {
 		pnl_navTree.setLayout(null);
 		{
 			tree_entities = new JTree();
+			tree_entities.addTreeSelectionListener(new TreeSelectionListener() {
+				public void valueChanged(TreeSelectionEvent arg0) {
+					moduleUpdate((DefaultMutableTreeNode) tree_entities.getLastSelectedPathComponent());
+					tabbedPane_treeNodeMediaModules.setEnabled(true);
+				}
+			});
 			tree_entities.setFont(new Font("Consolas", Font.PLAIN, 15));
 			tree_entities.setRootVisible(false);
-			tree_entities.setModel(new DefaultTreeModel(
-				new DefaultMutableTreeNode("Results") {
-					{
-					}
-				}
-			));
-			tree_entities.setBounds(10, 11, 282, 532);
+			tree_entities.setModel(new DefaultTreeModel(new DefaultMutableTreeNode("Results")));
+			tree_entities.setBounds(10, 11, 282, 613);
 			pnl_navTree.add(tree_entities);
 		}
 		
-		JPanel panel_4 = new JPanel();
-		panel_4.setBounds(322, 11, 882, 635);
-		pnl_contentWrap.add(panel_4);
-		panel_4.setLayout(null);
+		JPanel pnl_treeNodeDetails = new JPanel();
+		pnl_treeNodeDetails.setBounds(322, 11, 882, 635);
+		pnl_contentWrap.add(pnl_treeNodeDetails);
+		pnl_treeNodeDetails.setLayout(null);
 		
-		JPanel panel_5 = new JPanel();
-		panel_5.setBackground(new Color(255, 255, 255));
-		panel_5.setBounds(10, 11, 862, 87);
-		panel_4.add(panel_5);
-		panel_5.setLayout(null);
+		JPanel pnl_treeNodeMeta = new JPanel();
+		pnl_treeNodeMeta.setBackground(new Color(255, 255, 255));
+		pnl_treeNodeMeta.setBounds(10, 11, 862, 87);
+		pnl_treeNodeDetails.add(pnl_treeNodeMeta);
+		pnl_treeNodeMeta.setLayout(null);
 		{
 			JLabel label = new JLabel("#12345");
 			label.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
 			label.setFont(new Font("Consolas", Font.BOLD, 15));
 			label.setBounds(10, 11, 74, 33);
-			panel_5.add(label);
+			pnl_treeNodeMeta.add(label);
 		}
 		{
 			JLabel lblNewLabel = new JLabel("Braunes Luxus-Toilettenpapier");
 			lblNewLabel.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
 			lblNewLabel.setFont(new Font("Source Sans Pro", Font.PLAIN, 14));
 			lblNewLabel.setBounds(94, 11, 758, 33);
-			panel_5.add(lblNewLabel);
+			pnl_treeNodeMeta.add(lblNewLabel);
 		}
 		{
-			JTabbedPane tabbedPane = new JTabbedPane(JTabbedPane.TOP);
-			tabbedPane.setFont(new Font("Segoe UI Semibold", Font.BOLD, 15));
-			tabbedPane.setBounds(10, 137, 862, 487);
-			panel_4.add(tabbedPane);
+			tabbedPane_treeNodeMediaModules = new JTabbedPane(JTabbedPane.TOP);
+			tabbedPane_treeNodeMediaModules.setFont(new Font("Segoe UI Semibold", Font.BOLD, 15));
+			tabbedPane_treeNodeMediaModules.setBounds(10, 137, 862, 487);
+			pnl_treeNodeDetails.add(tabbedPane_treeNodeMediaModules);
 			{
 				JPanel panel = new JPanel();
 				panel.setBackground(new Color(255, 255, 255));
-				tabbedPane.addTab("Images", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_images.png")), panel, null);
+				tabbedPane_treeNodeMediaModules.addTab("Images", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_images.png")), panel, null);
+				tabbedPane_treeNodeMediaModules.setEnabledAt(0, false);
 				panel.setLayout(null);
 				{
-					JLabel lblNewLabel_1 = new JLabel("");
-					lblNewLabel_1.setOpaque(true);
-					lblNewLabel_1.setBackground(new Color(102, 153, 204));
-					lblNewLabel_1.setBounds(204, 11, 378, 378);
-					panel.add(lblNewLabel_1);
+					lbl_ArticleImageViewport = new JLabel("");
+					lbl_ArticleImageViewport.setOpaque(true);
+					lbl_ArticleImageViewport.setBackground(new Color(102, 153, 204));
+					lbl_ArticleImageViewport.setBounds(204, 11, 378, 378);
+					panel.add(lbl_ArticleImageViewport);
 				}
 				{
-					JLabel label = new JLabel("");
-					label.setBounds(27, 30, 100, 100);
-					panel.add(label);
-					label.setOpaque(true);
-					label.setBackground(new Color(102, 153, 204));
-				}
-				{
-					JList list_imgs = new JList();
-					list_imgs.setBorder(new LineBorder(new Color(0, 0, 0)));
-					list_imgs.setBounds(10, 11, 133, 437);
-					panel.add(list_imgs);
-					list_imgs.setLayout(null);
+					list_ArticleImages = new JList();
+					list_ArticleImages.setBorder(new LineBorder(new Color(0, 0, 0)));
+					list_ArticleImages.setBounds(10, 11, 129, 430);
+					panel.add(list_ArticleImages);
+					list_ArticleImages.setLayout(null);
 				}
 				{
 					JPanel panel_1 = new JPanel();
-					panel_1.setBounds(204, 400, 378, 48);
+					panel_1.setBounds(204, 400, 378, 41);
 					panel.add(panel_1);
 				}
 				{
 					JPanel panel_1 = new JPanel();
-					panel_1.setBounds(592, 11, 255, 437);
+					panel_1.setBounds(635, 11, 212, 430);
 					panel.add(panel_1);
 				}
 			}
 			{
 				JPanel panel = new JPanel();
-				tabbedPane.addTab("Videos", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_videos.png")), panel, null);
+				tabbedPane_treeNodeMediaModules.addTab("Videos", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_videos.png")), panel, null);
 			}
 			{
 				JPanel panel = new JPanel();
-				tabbedPane.addTab("Labels", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_labels.png")), panel, null);
+				tabbedPane_treeNodeMediaModules.addTab("Labels", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_labels.png")), panel, null);
 			}
 			{
 				JPanel panel = new JPanel();
-				tabbedPane.addTab("Attachments", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_attachments.png")), panel, null);
+				tabbedPane_treeNodeMediaModules.addTab("Attachments", new ImageIcon(MainView.class.getResource("/res/icons/v2/icon_attachments.png")), panel, null);
 			}
 		}
 	}
@@ -446,5 +400,39 @@ public class MainView extends JFrame {
 		render.setClosedIcon(new ImageIcon("./src/res/icons/v2/icon_0G.png"));
 		render.setLeafIcon(new ImageIcon("./src/res/icons/v2/icon_00.png"));
 		tree_entities.setCellRenderer(render);
+		
+		btnGrp_adminpanels.add(rdbtnmntm_adminpanelArticles);
+		btnGrp_adminpanels.add(rdbtnmntm_adminpanelBrands);
+	}
+	
+	public void moduleUpdate(DefaultMutableTreeNode selectedNode) {
+		
+	}
+	public JButton getBtnNewButton() {
+		return btnNewButton;
+	}
+	public JTextField getTxtf_searchField() {
+		return txtf_searchField;
+	}
+	public JLabel getLbl_imgViewport() {
+		return lbl_ArticleImageViewport;
+	}
+	public JList getList_imgs() {
+		return list_ArticleImages;
+	}
+	public JTree getTree_entities() {
+		return tree_entities;
+	}
+	public JTabbedPane getTabbedPane_treeNodeMediaModules() {
+		return tabbedPane_treeNodeMediaModules;
+	}
+	public ButtonGroup getBtnGrp_adminpanels() {
+		return btnGrp_adminpanels;
+	}
+	public JRadioButtonMenuItem getRdbtnmntm_adminpanelArticles() {
+		return rdbtnmntm_adminpanelArticles;
+	}
+	public JRadioButtonMenuItem getRdbtnmntm_adminpanelBrands() {
+		return rdbtnmntm_adminpanelBrands;
 	}
 }

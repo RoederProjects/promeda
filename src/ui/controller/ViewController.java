@@ -8,6 +8,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import ui.frames.MainView;
+
 public class ViewController {
 
 	private int screenWidth;

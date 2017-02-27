@@ -1,10 +1,10 @@
 package run;
 
-import java.awt.EventQueue;
 
 import javax.swing.UIManager;
 
-import ui.frames.MainView;
+import ui.controller.MainController;
+import ui.frames.MainView2;
 
 public class Run {
 	
@@ -17,16 +17,17 @@ public class Run {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					MainView frame = new MainView();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+		MainController mainController = new MainController();
+//		EventQueue.invokeLater(new Runnable() {
+//			public void run() {
+//				try {
+//					MainView frame = new MainView();
+//					frame.setVisible(true);
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		});
 	}
 
 }
