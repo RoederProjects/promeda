@@ -142,6 +142,7 @@ public class PsdView extends JPanel {
 			this.width = witdh;
 			this.height = height;
 			setPreferredSize(new Dimension(witdh+100, height+100));
+			
 		}
 		
 		public void clear() {

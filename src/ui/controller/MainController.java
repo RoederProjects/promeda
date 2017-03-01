@@ -4,32 +4,34 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
 
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
-import javax.swing.JTabbedPane;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.DefaultTreeModel;
 
-import core.entities.bricks.Article;
-import core.entities.bricks.Brand;
-import core.entities.bricks.GrpArticle;
-import core.entities.facilities.mysql.MySqlHandler;
-import modules.brands.service.SvcLogo;
-import modules.products.service.*;
-import ui.frames.MainView;
+import core.bricks.Brand;
+import core.bricks.GrpArticle;
+import core.handler.MySQLHandler;
+import core.handler.media.SvcArticle;
+import core.handler.media.SvcAttachment;
+import core.handler.media.SvcBrand;
+import core.handler.media.SvcImage;
+import core.handler.media.SvcLabel;
+import core.handler.media.SvcLogo;
+import core.handler.media.SvcVideo;
+import core.service.SearchService;
 import ui.frames.MainView2;
-import ui.renderer.ArticleImagesListRenderer;
 import ui.renderer.BrandsListRenderer;
 
 public class MainController extends ViewController {
@@ -38,20 +40,22 @@ public class MainController extends ViewController {
 	// GUI
 	private MainView2 mainView;
 	// DB
-	private MySqlHandler mySqlHandler;
+	private MySQLHandler mySQLHandler;
 	// MEDIA-SERVICES
 	private SvcImage svcImage;
 	private SvcVideo svcVideo;
 	private SvcLabel svcLabel;
 	private SvcAttachment svcAttachment;
 	private SvcLogo svcLogo;
+	private SvcBrand svcBrand;
+	private SvcArticle svcArticle;
 	
 // SEARCH-FIELDS
 	private boolean searchMatch;
 	private String searchQuery;
 	private GrpArticle searchResult;
 	private DefaultMutableTreeNode selectedTreeNode;
-	private SvcSearch svcSearch;
+	private SearchService searchService;
 
 // BOARDS-FIELDS
 	private String activePanel;
@@ -62,7 +66,7 @@ public class MainController extends ViewController {
 	 * Constructor - Inits the media-services of products-module 						*
 	 ************************************************************************************/
 	public MainController() {
-		this.mySqlHandler = new MySqlHandler();
+		this.mySQLHandler = new MySQLHandler();
 		this.mainView = new MainView2();
 		mainView.setVisible(true);
 		svcImage = new SvcImage();
@@ -70,8 +74,10 @@ public class MainController extends ViewController {
 		svcLabel = new SvcLabel();
 		svcAttachment = new SvcAttachment();
 		svcLogo = new SvcLogo();
+		svcBrand = new SvcBrand();
+		svcArticle = new SvcArticle();
 		
-		svcSearch = new SvcSearch();
+		searchService = new SearchService();
 		this.searchMatch = false;
 		this.searchQuery = "";
 		
@@ -129,7 +135,7 @@ public class MainController extends ViewController {
 					mainView.getTabbedPane_treeNodeMediaModules().setEnabled(false);
 					break;
 				case "brands":
-					svcSearch.updateListBrands(mainView.getTxtf_searchField().getText());
+					updateBrandList(mainView.getTxtf_searchField().getText());
 					break;
 				}
 			}
@@ -163,6 +169,23 @@ public class MainController extends ViewController {
 				updateBrandService(mainView.getList_brands().getSelectedValue());
 			}
 		});
+		
+		mainView.getBtn_addBrand().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				svcBrand.brandAdd();
+			}
+		});
+		mainView.getBtn_deleteBrand().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				svcBrand.brandRemove(mainView.getList_brands().getSelectedValue());
+			}
+		});
+		
+		mainView.getMntm_imageWizard().addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ImgWzrdController imgWzrdCtrl = new ImgWzrdController();
+			}
+		});
 	}
 	
 	public boolean isSearchMatch() {
@@ -190,103 +213,19 @@ public class MainController extends ViewController {
 	}
 
 	
-	/****************************************************************************************
-	 * search for results in database	
-	 * @param searchQuery				
-	 * @return							
-	 ****************************************************************************************/
-	/*public GrpArticle search(String searchQuery) {
 	
-		String[] searchResultArticles;
-		GrpArticle searchResult = null;
-		
-	// SEARCHQUERY CONTAINS 00-ARTICLE-NR
-		if (searchQuery.matches("[0-9]{5}+"))
-		{
-			searchQuery = "00"+searchQuery;
-			searchResult = new GrpArticle(this.mySqlHandler.sqlArrayListToStringArray(this.mySqlHandler.sqlExecuteQuery("SELECT parent_id FROM pro_product_relation WHERE child_id = '"+searchQuery+"' GROUP BY parent_id ORDER BY parent_id ASC;"))[0]);
-			searchResultArticles = this.mySqlHandler.sqlArrayListToStringArray(this.mySqlHandler.sqlExecuteQuery("SELECT child_id FROM pro_product_relation WHERE parent_id = '"+searchResult.getNr()+"' ORDER BY child_id ASC;"));
-			Article[] subSearchResult = new Article[searchResultArticles.length];
-			for( int count = 0; count < searchResultArticles.length; count++ )
-			{
-				subSearchResult[count] = new Article(searchResultArticles[count]);
-			}
-			searchResult.setArticles(subSearchResult);
-			this.searchMatch = true;
-			this.searchQuery = searchQuery;
-			this.searchResult = searchResult;
-			return searchResult;
-		}
-		
-	// SEARCHQUERY CONTAINS 0G-ARTICLE-NR
-		else if(searchQuery.matches("([0-9]{5}(G|g){1})+"))
-		{
-			searchQuery = "0G"+searchQuery;
-			searchResult = new GrpArticle(this.mySqlHandler.sqlArrayListToStringArray(this.mySqlHandler.sqlExecuteQuery("SELECT parent_id FROM pro_product_relation WHERE parent_id = '"+searchQuery+"' GROUP BY parent_id ORDER BY parent_id ASC;"))[0]);
-			searchResultArticles = this.mySqlHandler.sqlArrayListToStringArray(this.mySqlHandler.sqlExecuteQuery("SELECT child_id FROM pro_product_relation WHERE parent_id = '"+searchResult.getNr()+"' ORDER BY child_id ASC;"));
-			Article[] subSearchResult = new Article[searchResultArticles.length];
-			for( int count = 0; count < searchResultArticles.length; count++ )
-			{
-				subSearchResult[count] = new Article(searchResultArticles[count]);
-			}
-			searchResult.setArticles(subSearchResult);
-			this.searchMatch = true;
-			this.searchQuery = searchQuery;
-			return searchResult;
-		}
-		
-	// SEARCHQUERY INVALID
-		else
-		{
-			System.out.println("not a articlenumber");
-			this.searchMatch = false;
-			return null;
-		}
-	}
-	*/
-	
-	
+/**********************************************************************************************************************
+ ******** A R T I C L E S - B O A R D [Begin] *************************************************************************
+ */
 	/****************************************************************************************
 	 * 
 	 * @param tree_entities
 	 * @param searchQuery
 	 ***************************************************************************************/
 	public void updateArticleTree(JTree tree_entities, String searchQuery) {
-		tree_entities.setModel(svcSearch.updateArticleTreeModel(svcSearch.articleSearch(searchQuery)));
+		tree_entities.setModel(searchService.updateArticleTreeModel(searchService.articleSearch(searchQuery)));
 		tree_entities.expandRow(0);
 	}
-	
-	
-/*	*//**************************************************************************************
-	 * Generate new DefaultTreeModel
-	 * @param (GrpArticle) searchResult
-	 * @return DefaultTreeModel
-	 *************************************************************************************//*
-	public DefaultTreeModel updateArticleTreeModel( GrpArticle searchResult) {
-		
-		DefaultMutableTreeNode treeNode;
-
-		DefaultMutableTreeNode treeSubNode;
-		DefaultMutableTreeNode treeSubSubNode;
-		treeNode = new DefaultMutableTreeNode("Results");
-		
-        		treeSubNode = new DefaultMutableTreeNode(searchResult.getNr());
-        		
-        		for(int x = 0; x < searchResult.getArticles().length; x++) {
-        			treeSubSubNode = new DefaultMutableTreeNode(searchResult.getArticles()[x].getNr());
-	        		treeSubNode.add(treeSubSubNode);
-	        		if (searchResult.getArticles()[x].getNr()==this.searchQuery) {
-	        			 this.selectedTreeNode = treeSubSubNode;
-	        		}
-        		}
-        		
-				treeNode.add(treeSubNode);
-        	
-        	DefaultTreeModel resultModel = new DefaultTreeModel(treeNode);
-        	
-        return resultModel;
-    }
-	*/
 	
 	
 	/************************************************************************************
@@ -296,6 +235,7 @@ public class MainController extends ViewController {
 	 * @param tabbedPane_treeNodeMediaModules 
 	 ************************************************************************************/
 	public void updateProductService(DefaultMutableTreeNode selectedNode) {
+		updateArticleTitleBar(selectedNode);
 		switch(mainView.getTabbedPane_treeNodeMediaModules().getSelectedIndex()) {
 		case 0:
 			svcImage.fillImgViewport(selectedNode, mainView.getLbl_imgViewport());
@@ -306,25 +246,42 @@ public class MainController extends ViewController {
 		}
 	}
 	
+	public void updateArticleTitleBar(DefaultMutableTreeNode selectedNode) {
+		Object nodeInfo = selectedNode.getUserObject();
+        String selectedArticleNr = nodeInfo.toString();
+        mainView.getLbl_titleBarArtNr().setText(selectedArticleNr);
+        mainView.getLbl_titleBarArtName().setText("");
+	}
+/**
+ ******** A R T I C L E S - B O A R D [End] ****************************************************************************
+ ***********************************************************************************************************************/
+
+
 	
+/**********************************************************************************************************************
+ ******** B R A N D S - B O A R D [Begin] *****************************************************************************
+ */	
 	/**
 	 * Inits JList list_brands with all brands
 	 */
 	public void initListBrands() {
+		mySQLHandler.conCheck();
 		DefaultListModel<Brand> model = new DefaultListModel<Brand>();
 		String sqlQuery = "SELECT brands_name FROM pro_brands ORDER BY brands_name ASC;";
-		for (String brandName: this.mySqlHandler.sqlArrayListToStringArray(this.mySqlHandler.sqlExecuteQuery(sqlQuery)))
+		for (String brandName: this.mySQLHandler.sqlArrayListToStringArray(this.mySQLHandler.sqlExecuteQuery(sqlQuery)))
 		{
 			model.addElement(new Brand(brandName));
 		}
 			mainView.getList_brands().setModel(model);
 			mainView.getList_brands().setCellRenderer(new BrandsListRenderer());
+			mainView.getList_brands().setBorder(new CompoundBorder(new TitledBorder(new CompoundBorder(null, UIManager.getBorder("CheckBoxMenuItem.border")), "All Brands", TitledBorder.LEADING, TitledBorder.BELOW_TOP, null, new Color(102, 102, 102)), new EmptyBorder(4, 4, 4, 4)));
 	}
 	
 	
 	public void updateBrandList(String searchQuery) {
-		mainView.getList_brands().setModel(svcSearch.updateListBrands(searchQuery));
+		mainView.getList_brands().setModel(searchService.updateListBrands(searchQuery));
 		mainView.getList_brands().setCellRenderer(new BrandsListRenderer());
+		mainView.getList_brands().setBorder(new CompoundBorder(new TitledBorder(new CompoundBorder(null, UIManager.getBorder("CheckBoxMenuItem.border")), "All Brands", TitledBorder.LEADING, TitledBorder.BELOW_TOP, null, new Color(102, 102, 102)), new EmptyBorder(4, 4, 4, 4)));
 	}
 	
 	/**
@@ -340,21 +297,8 @@ public class MainController extends ViewController {
 			break;
 		}
 	}
+/**
+ ******** B R A N D S - B O A R D [End] ********************************************************************************
+ ***********************************************************************************************************************/
 	
-	/*private void setArticleImageList() {
-        final DefaultListModel model = new DefaultListModel();
-        if (grpArticle.hasImages()) {
-            for (File image : grpArticle.getImages()) {
-                model.addElement(image.getName());
-            }
-        }
-        for( Article article: articles ) {
-            
-            if (article.hasImages()) {
-                for (File image : article.getImages()) {
-                model.addElement(image.getName());
-                }
-            }
-        }
-	}*/
 }
