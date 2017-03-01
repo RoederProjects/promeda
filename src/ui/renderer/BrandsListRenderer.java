@@ -7,7 +7,7 @@ import java.io.File;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JList;
 
-import core.entities.bricks.Brand;
+import core.bricks.Brand;
 
 /**
  *
@@ -41,3 +41,5 @@ public class BrandsListRenderer extends DefaultListCellRenderer {
             return super.getListCellRendererComponent(list, listElement, index, isSelected, cellHasFocus);
         }
     }
+
+

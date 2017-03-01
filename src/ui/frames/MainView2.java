@@ -34,10 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.tree.DefaultTreeModel;
 
-import modules.products.service.SvcAttachment;
-import modules.products.service.SvcImage;
-import modules.products.service.SvcLabel;
-import modules.products.service.SvcVideo;
+import core.handler.media.SvcAttachment;
+import core.handler.media.SvcImage;
+import core.handler.media.SvcLabel;
+import core.handler.media.SvcVideo;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -51,6 +51,8 @@ import javax.swing.UIManager;
 import javax.swing.JScrollPane;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
+import java.awt.Cursor;
+import java.awt.Toolkit;
 
 public class MainView2 extends JFrame {
 
@@ -73,8 +75,15 @@ public class MainView2 extends JFrame {
 	private JTextField textField;
 	private JList list_brands;
 	private JLabel lbl_logoViewport;
+	private JButton btn_addBrand;
+	private JButton btn_deleteBrand;
+	private JButton btn_brandNameEdit;
+	private JMenuItem mntm_imageWizard;
+	private JLabel lbl_titleBarArtName;
+	private JLabel lbl_titleBarArtNr;
 	
 	public MainView2() {
+		setIconImage(Toolkit.getDefaultToolkit().getImage(MainView2.class.getResource("/res/favicon/dromedar.png")));
 		setResizable(false);
 
 		/**
@@ -230,13 +239,8 @@ public class MainView2 extends JFrame {
 		mnTools.setBorder(null);
 		menuBar.add(mnTools);
 		
-		JMenuItem mnImagewizard = new JMenuItem("ImageWizard");
-		mnImagewizard.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				new ImageWizard().setVisible(true);
-			}
-		});
-		mnTools.add(mnImagewizard);
+		mntm_imageWizard = new JMenuItem("ImageWizard");
+		mnTools.add(mntm_imageWizard);
 		
 		JMenu mnVideowizard = new JMenu("VideoWizard");
 		mnTools.add(mnVideowizard);
@@ -246,6 +250,19 @@ public class MainView2 extends JFrame {
 		
 		JMenu mnAttachmentwizard = new JMenu("AttachmentWizard");
 		mnTools.add(mnAttachmentwizard);
+		{
+			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
+			menuBar.add(rigidArea);
+		}
+		
+		JMenu mnUserprofile = new JMenu("USER");
+		mnUserprofile.setBorder(null);
+		mnUserprofile.setFont(new Font("Open Sans", Font.BOLD, 18));
+		menuBar.add(mnUserprofile);
+		{
+			JMenuItem mntmLogout = new JMenuItem("Change Password");
+			mnUserprofile.add(mntmLogout);
+		}
 		{
 			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
 			menuBar.add(rigidArea);
@@ -264,24 +281,7 @@ public class MainView2 extends JFrame {
 			mnInfo.add(mntmAbout);
 		}
 		{
-			Component rigidArea = Box.createRigidArea(new Dimension(20, 20));
-			menuBar.add(rigidArea);
-		}
-		
-		JMenu mnUserprofile = new JMenu("USER-PROFILE");
-		mnUserprofile.setBorder(null);
-		mnUserprofile.setFont(new Font("Open Sans", Font.BOLD, 18));
-		menuBar.add(mnUserprofile);
-		{
-			JMenuItem mntmLogout = new JMenuItem("Logout");
-			mnUserprofile.add(mntmLogout);
-		}
-		{
-			JMenuItem mntmExit = new JMenuItem("Exit");
-			mnUserprofile.add(mntmExit);
-		}
-		{
-			Component rigidArea = Box.createRigidArea(new Dimension(328, 20));
+			Component rigidArea = Box.createRigidArea(new Dimension(403, 20));
 			menuBar.add(rigidArea);
 		}
 		{
@@ -290,16 +290,12 @@ public class MainView2 extends JFrame {
 			mnSystem.setFont(new Font("Open Sans", Font.BOLD, 18));
 			menuBar.add(mnSystem);
 			{
-				JMenuItem mntmStores = new JMenuItem("Stores");
+				JMenuItem mntmStores = new JMenuItem("Settings");
 				mnSystem.add(mntmStores);
 			}
 			{
-				JMenu mnRemoteConfig = new JMenu("Remote Config");
+				JMenu mnRemoteConfig = new JMenu("User Management");
 				mnSystem.add(mnRemoteConfig);
-				{
-					JMenuItem mntmPromond = new JMenuItem("Promond");
-					mnRemoteConfig.add(mntmPromond);
-				}
 			}
 		}
 		
@@ -341,18 +337,18 @@ public class MainView2 extends JFrame {
 			pnl_treeNodeDetails.add(pnl_treeNodeMeta);
 			pnl_treeNodeMeta.setLayout(null);
 			{
-				JLabel label = new JLabel("#12345");
-				label.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
-				label.setFont(new Font("Consolas", Font.BOLD, 15));
-				label.setBounds(10, 11, 74, 33);
-				pnl_treeNodeMeta.add(label);
+				lbl_titleBarArtNr = new JLabel("#12345");
+				lbl_titleBarArtNr.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+				lbl_titleBarArtNr.setFont(new Font("Consolas", Font.BOLD, 15));
+				lbl_titleBarArtNr.setBounds(10, 11, 74, 33);
+				pnl_treeNodeMeta.add(lbl_titleBarArtNr);
 			}
 			{
-				JLabel lblNewLabel = new JLabel("Braunes Luxus-Toilettenpapier");
-				lblNewLabel.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
-				lblNewLabel.setFont(new Font("Source Sans Pro", Font.PLAIN, 14));
-				lblNewLabel.setBounds(94, 11, 758, 33);
-				pnl_treeNodeMeta.add(lblNewLabel);
+				lbl_titleBarArtName = new JLabel("Braunes Luxus-Toilettenpapier");
+				lbl_titleBarArtName.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
+				lbl_titleBarArtName.setFont(new Font("Source Sans Pro", Font.PLAIN, 14));
+				lbl_titleBarArtName.setBounds(94, 11, 758, 33);
+				pnl_treeNodeMeta.add(lbl_titleBarArtName);
 			}
 			{
 				tabbedPane_articleMedia = new JTabbedPane(JTabbedPane.TOP);
@@ -414,7 +410,8 @@ public class MainView2 extends JFrame {
 				pnl_brandsBoard.add(pnl_brandList);
 				{
 					JScrollPane scrollPane = new JScrollPane();
-					scrollPane.setBounds(10, 11, 282, 613);
+					scrollPane.setBorder(new TitledBorder(new LineBorder(new Color(51, 51, 51), 2), "All Brands", TitledBorder.LEADING, TitledBorder.ABOVE_TOP, null, new Color(0, 0, 0)));
+					scrollPane.setBounds(10, 0, 282, 583);
 					pnl_brandList.add(scrollPane);
 					{
 						list_brands = new JList();
@@ -422,6 +419,24 @@ public class MainView2 extends JFrame {
 						list_brands.setFont(new Font("Consolas", Font.PLAIN, 15));
 						list_brands.setBorder(new CompoundBorder(new TitledBorder(new CompoundBorder(null, UIManager.getBorder("CheckBoxMenuItem.border")), "All Brands", TitledBorder.LEADING, TitledBorder.BELOW_TOP, null, new Color(102, 102, 102)), new EmptyBorder(4, 4, 4, 4)));
 					}
+				}
+				{
+					btn_addBrand = new JButton("");
+					btn_addBrand.setFocusPainted(false);
+					btn_addBrand.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					btn_addBrand.setIcon(new ImageIcon(MainView2.class.getResource("/res/icons/v2/icon_cycle-add.png")));
+					btn_addBrand.setContentAreaFilled(false);
+					btn_addBrand.setBounds(196, 590, 34, 34);
+					pnl_brandList.add(btn_addBrand);
+				}
+				{
+					btn_deleteBrand = new JButton("");
+					btn_deleteBrand.setFocusPainted(false);
+					btn_deleteBrand.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+					btn_deleteBrand.setContentAreaFilled(false);
+					btn_deleteBrand.setIcon(new ImageIcon(MainView2.class.getResource("/res/icons/v2/icon_cycle-remove.png")));
+					btn_deleteBrand.setBounds(240, 590, 34, 34);
+					pnl_brandList.add(btn_deleteBrand);
 				}
 			}
 			{
@@ -431,6 +446,7 @@ public class MainView2 extends JFrame {
 				pnl_brandsBoard.add(pnl_brandDetails);
 				{
 					JPanel pnl_brandTitle = new JPanel();
+					pnl_brandTitle.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 					pnl_brandTitle.setLayout(null);
 					pnl_brandTitle.setBackground(Color.WHITE);
 					pnl_brandTitle.setBounds(10, 11, 862, 87);
@@ -439,8 +455,17 @@ public class MainView2 extends JFrame {
 						JLabel lbl_brandName = new JLabel("Brandname");
 						lbl_brandName.setFont(new Font("Source Sans Pro", Font.PLAIN, 14));
 						lbl_brandName.setBorder(new CompoundBorder(new MatteBorder(2, 0, 2, 0, (Color) new Color(0, 0, 0)), new EmptyBorder(5, 5, 5, 5)));
-						lbl_brandName.setBounds(10, 11, 842, 33);
+						lbl_brandName.setBounds(10, 11, 842, 42);
 						pnl_brandTitle.add(lbl_brandName);
+					}
+					{
+						btn_brandNameEdit = new JButton("");
+						btn_brandNameEdit.setFocusPainted(false);
+						btn_brandNameEdit.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+						btn_brandNameEdit.setContentAreaFilled(false);
+						btn_brandNameEdit.setIcon(new ImageIcon(MainView2.class.getResource("/res/icons/v2/icon_cycle-edit.png")));
+						btn_brandNameEdit.setBounds(818, 11, 34, 42);
+						pnl_brandTitle.add(btn_brandNameEdit);
 					}
 				}
 				{
@@ -558,5 +583,23 @@ public class MainView2 extends JFrame {
 	}
 	public JLabel getLbl_logoViewport() {
 		return lbl_logoViewport;
+	}
+	public JButton getBtn_addBrand() {
+		return btn_addBrand;
+	}
+	public JButton getBtn_deleteBrand() {
+		return btn_deleteBrand;
+	}
+	public JButton getBtn_brandNameEdit() {
+		return btn_brandNameEdit;
+	}
+	public JMenuItem getMntm_imageWizard() {
+		return mntm_imageWizard;
+	}
+	public JLabel getLbl_titleBarArtNr() {
+		return lbl_titleBarArtNr;
+	}
+	public JLabel getLbl_titleBarArtName() {
+		return lbl_titleBarArtName;
 	}
 }

@@ -34,10 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.tree.DefaultTreeModel;
 
-import modules.products.service.SvcAttachment;
-import modules.products.service.SvcImage;
-import modules.products.service.SvcLabel;
-import modules.products.service.SvcVideo;
+import core.handler.media.SvcAttachment;
+import core.handler.media.SvcImage;
+import core.handler.media.SvcLabel;
+import core.handler.media.SvcVideo;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
@@ -221,7 +221,7 @@ public class MainView extends JFrame {
 		JMenuItem mnImagewizard = new JMenuItem("ImageWizard");
 		mnImagewizard.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				new ImageWizard().setVisible(true);
+				new ImgWzrdView().setVisible(true);
 			}
 		});
 		mnTools.add(mnImagewizard);
