@@ -5,6 +5,7 @@
  */
 package ui.renderer;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import javax.swing.BorderFactory;
@@ -12,6 +13,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.SwingConstants;
 import javax.swing.border.TitledBorder;
 
 /**
@@ -31,10 +33,12 @@ public class ArticleImagesListRenderer extends DefaultListCellRenderer {
             JLabel label = (JLabel) super.getListCellRendererComponent(
                             list, emptyString, index, isSelected, cellHasFocus);
             
-            TitledBorder title;
-            title = BorderFactory.createTitledBorder(value.toString());
-            label.setBorder(title);
+            label.setBorder(new TitledBorder(null, value.toString(), TitledBorder.CENTER, TitledBorder.ABOVE_TOP, null, new Color(102, 102, 102)));
+            //TitledBorder title;
+            //title = BorderFactory.createTitledBorder(value.toString());
+            //label.setBorder(title);
             
+            label.setHorizontalAlignment(SwingConstants.CENTER);
             label.setIcon(new javax.swing.ImageIcon(".\\produkte\\medien\\bilder\\100px\\" + value));
             //label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/promeda/resource/39172.jpg")));
             //label.setBackground(new java.awt.Color(102, 102, 102));

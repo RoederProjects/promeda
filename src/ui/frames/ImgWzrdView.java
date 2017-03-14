@@ -29,6 +29,14 @@ import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JProgressBar;
 import java.awt.Toolkit;
+import java.awt.SystemColor;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeEvent;
+import javax.swing.border.MatteBorder;
+import javax.swing.JTextField;
+import javax.swing.JFileChooser;
 
 public class ImgWzrdView extends JFrame {
 
@@ -53,6 +61,12 @@ public class ImgWzrdView extends JFrame {
 	private JButton btn_card4Back;
 	private JButton btn_card4Cancel;
 	private JLabel lbl_test;
+	private JCheckBox chckbx_imgSizeThumb;
+	private JCheckBox chckbx_imgSizeMedium;
+	private JCheckBox chckbx_imgSizeLarge;
+	private JPanel pnl_card5;
+	private JTextField txtF_backupLocationPath;
+	private JButton btn_card3BrowseBackupLocation;
 
 	
 	public ImgWzrdView() {
@@ -135,7 +149,7 @@ public class ImgWzrdView extends JFrame {
 					list_files.setFont(new Font("Calibri Light", Font.BOLD, 14));
 					list_files.setVisibleRowCount(20);
 					list_files.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-					list_files.setBorder(new CompoundBorder(new EtchedBorder(EtchedBorder.LOWERED, new Color(51, 204, 204), new Color(0, 153, 153)), new EmptyBorder(4, 4, 4, 4)));
+					list_files.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED, null, null, null, null), new EmptyBorder(4, 4, 4, 4)));
 					list_files.setBounds(10, 11, 223, 278);
 					pnl_content.add(list_files);
 				}
@@ -199,19 +213,22 @@ public class ImgWzrdView extends JFrame {
 					panel_1.add(lblImagesizes);
 				}
 				{
-					JCheckBox chckbxThumb = new JCheckBox("Thumb (100x100)");
-					chckbxThumb.setBounds(6, 39, 132, 23);
-					panel_1.add(chckbxThumb);
+					chckbx_imgSizeThumb = new JCheckBox("Thumb (100x100)");
+					chckbx_imgSizeThumb.setSelected(true);
+					chckbx_imgSizeThumb.setBounds(6, 39, 132, 23);
+					panel_1.add(chckbx_imgSizeThumb);
 				}
 				{
-					JCheckBox chckbxMediumx = new JCheckBox("Medium (378x378)");
-					chckbxMediumx.setBounds(6, 65, 132, 23);
-					panel_1.add(chckbxMediumx);
+					chckbx_imgSizeMedium = new JCheckBox("Medium (378x378)");
+					chckbx_imgSizeMedium.setSelected(true);
+					chckbx_imgSizeMedium.setBounds(6, 65, 132, 23);
+					panel_1.add(chckbx_imgSizeMedium);
 				}
 				{
-					JCheckBox chckbxLargex = new JCheckBox("Large (1280x1280)");
-					chckbxLargex.setBounds(6, 91, 132, 23);
-					panel_1.add(chckbxLargex);
+					chckbx_imgSizeLarge = new JCheckBox("Large (1280x1280)");
+					chckbx_imgSizeLarge.setSelected(true);
+					chckbx_imgSizeLarge.setBounds(6, 91, 132, 23);
+					panel_1.add(chckbx_imgSizeLarge);
 				}
 			}
 			{
@@ -307,8 +324,8 @@ public class ImgWzrdView extends JFrame {
 				panel_1.setBounds(206, 50, 343, 300);
 				pnl_card3.add(panel_1);
 				{
-					JLabel lblShops = new JLabel("Shops");
-					lblShops.setBounds(6, 18, 112, 14);
+					JLabel lblShops = new JLabel("Shops (AccessData can be viewed and edit in the SystemSettings)");
+					lblShops.setBounds(6, 18, 327, 14);
 					panel_1.add(lblShops);
 				}
 				{
@@ -321,6 +338,27 @@ public class ImgWzrdView extends JFrame {
 					chckbxMagentoWein.setBounds(6, 65, 165, 23);
 					panel_1.add(chckbxMagentoWein);
 				}
+				{
+					txtF_backupLocationPath = new JTextField();
+					txtF_backupLocationPath.setBounds(10, 135, 257, 23);
+					panel_1.add(txtF_backupLocationPath);
+					txtF_backupLocationPath.setColumns(10);
+				}
+				{
+					btn_card3BrowseBackupLocation = new JButton("Browse");
+					btn_card3BrowseBackupLocation.addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent arg0) {
+							txtF_backupLocationPath.setText(controller.openDirectory().getPath());
+						}
+					});
+					btn_card3BrowseBackupLocation.setBounds(266, 135, 67, 23);
+					panel_1.add(btn_card3BrowseBackupLocation);
+				}
+				{
+					JLabel lblMediabackupLocation = new JLabel("Media-Backup Location");
+					lblMediabackupLocation.setBounds(10, 118, 323, 14);
+					panel_1.add(lblMediabackupLocation);
+				}
 			}
 			{
 				JPanel panel_1 = new JPanel();
@@ -329,7 +367,7 @@ public class ImgWzrdView extends JFrame {
 				panel_1.setBounds(206, 0, 343, 39);
 				pnl_card3.add(panel_1);
 				{
-					JLabel lblSelectTheUpload = new JLabel("Select the Upload Options");
+					JLabel lblSelectTheUpload = new JLabel("Select the Upload- and Location-Options");
 					lblSelectTheUpload.setForeground(new Color(102, 102, 102));
 					lblSelectTheUpload.setBounds(10, 11, 284, 14);
 					panel_1.add(lblSelectTheUpload);
@@ -551,7 +589,7 @@ public class ImgWzrdView extends JFrame {
 			}
 		}
 		{
-			JPanel pnl_card5 = new JPanel();
+			pnl_card5 = new JPanel();
 			pnl_card5.setLayout(null);
 			contentPane.add(pnl_card5, "card5");
 			{
@@ -609,15 +647,29 @@ public class ImgWzrdView extends JFrame {
 				pnl_content.setBounds(206, 50, 343, 300);
 				pnl_card5.add(pnl_content);
 				{
-					JProgressBar progressBar = new JProgressBar();
-					progressBar.setBounds(10, 265, 323, 24);
-					pnl_content.add(progressBar);
-				}
-				{
-					lbl_test = new JLabel("");
+					lbl_test = new JLabel("0 %");
+					lbl_test.setHorizontalAlignment(SwingConstants.CENTER);
+					lbl_test.setForeground(new Color(51, 102, 204));
+					lbl_test.setFont(new Font("Calibri", Font.PLAIN, 32));
 					lbl_test.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
 					lbl_test.setBounds(10, 11, 323, 243);
 					pnl_content.add(lbl_test);
+				}
+				{
+					JLabel lblNewLabel = new JLabel("");
+					lblNewLabel.setBorder(new MatteBorder(1, 1, 1, 0, (Color) new Color(0, 0, 0)));
+					lblNewLabel.setOpaque(true);
+					lblNewLabel.setBackground(new Color(0, 153, 255));
+					lblNewLabel.setBounds(10, 265, 120, 24);
+					pnl_content.add(lblNewLabel);
+				}
+				{
+					JLabel label = new JLabel("");
+					label.setOpaque(true);
+					label.setBackground(new Color(255, 255, 255));
+					label.setBorder(new LineBorder(new Color(0, 0, 0)));
+					label.setBounds(10, 265, 320, 24);
+					pnl_content.add(label);
 				}
 			}
 			{
@@ -708,5 +760,23 @@ public class ImgWzrdView extends JFrame {
 	}
 	public JLabel getLbl_test() {
 		return lbl_test;
+	}
+	public JCheckBox getChckbx_imgSizeThumb() {
+		return chckbx_imgSizeThumb;
+	}
+	public JCheckBox getChckbx_imgSizeMedium() {
+		return chckbx_imgSizeMedium;
+	}
+	public JCheckBox getChckbx_imgSizeLarge() {
+		return chckbx_imgSizeLarge;
+	}
+	public JPanel getPnl_card5() {
+		return pnl_card5;
+	}
+	public JButton getBtn_card3BrowseBackupLocation() {
+		return btn_card3BrowseBackupLocation;
+	}
+	public JTextField getTxtF_backupLocationPath() {
+		return txtF_backupLocationPath;
 	}
 }

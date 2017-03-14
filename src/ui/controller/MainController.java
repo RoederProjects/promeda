@@ -20,32 +20,34 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 
+import core.bricks.Article;
 import core.bricks.Brand;
 import core.bricks.GrpArticle;
 import core.handler.MySQLHandler;
-import core.handler.media.SvcArticle;
-import core.handler.media.SvcAttachment;
-import core.handler.media.SvcBrand;
-import core.handler.media.SvcImage;
-import core.handler.media.SvcLabel;
-import core.handler.media.SvcLogo;
-import core.handler.media.SvcVideo;
+import core.handler.media.article.SvcArticle;
+import core.handler.media.article.AttachmentHandler;
+import core.handler.media.article.ImageHandler;
+import core.handler.media.article.LabelHandler;
+import core.handler.media.article.VideoHandler;
+import core.handler.media.brand.SvcBrand;
+import core.handler.media.brand.SvcLogo;
 import core.service.SearchService;
 import ui.frames.MainView2;
+import ui.frames.MainView3;
 import ui.renderer.BrandsListRenderer;
 
 public class MainController extends ViewController {
 
 // GENERAL OBJECTS
 	// GUI
-	private MainView2 mainView;
+	private MainView3 mainView;
 	// DB
 	private MySQLHandler mySQLHandler;
 	// MEDIA-SERVICES
-	private SvcImage svcImage;
-	private SvcVideo svcVideo;
-	private SvcLabel svcLabel;
-	private SvcAttachment svcAttachment;
+	private ImageHandler imageHandler;
+	private VideoHandler videoHandler;
+	private LabelHandler labelHandler;
+	private AttachmentHandler attachmentHandler;
 	private SvcLogo svcLogo;
 	private SvcBrand svcBrand;
 	private SvcArticle svcArticle;
@@ -59,7 +61,7 @@ public class MainController extends ViewController {
 
 // BOARDS-FIELDS
 	private String activePanel;
-	
+	private Article selectedArticle;
 	
 	
 	/************************************************************************************
@@ -67,15 +69,16 @@ public class MainController extends ViewController {
 	 ************************************************************************************/
 	public MainController() {
 		this.mySQLHandler = new MySQLHandler();
-		this.mainView = new MainView2();
+		this.mainView = new MainView3();
 		mainView.setVisible(true);
-		svcImage = new SvcImage();
-		svcVideo = new SvcVideo();
-		svcLabel = new SvcLabel();
-		svcAttachment = new SvcAttachment();
+		imageHandler = new ImageHandler();
+		videoHandler = new VideoHandler();
+		labelHandler = new LabelHandler();
+		attachmentHandler = new AttachmentHandler();
 		svcLogo = new SvcLogo();
 		svcBrand = new SvcBrand();
 		svcArticle = new SvcArticle();
+		selectedArticle = new Article("00000");
 		
 		searchService = new SearchService();
 		this.searchMatch = false;
@@ -98,6 +101,10 @@ public class MainController extends ViewController {
 		
 		mainView.getBtnGrp_adminpanels().add(mainView.getRdbtnmntm_adminpanelArticles());
 		mainView.getBtnGrp_adminpanels().add(mainView.getRdbtnmntm_adminpanelBrands());
+		
+		mainView.getTabbedPane_treeNodeMediaModules().setBackgroundAt(0, Color.getHSBColor(20, 50, 90));
+		mainView.getTabbedPane_treeNodeMediaModules().setBackgroundAt(1, Color.getHSBColor(50, 50, 90));
+		mainView.getTabbedPane_treeNodeMediaModules().setBackgroundAt(2, Color.getHSBColor(20, 20, 90));
 	}
 	
 	/**
@@ -238,8 +245,8 @@ public class MainController extends ViewController {
 		updateArticleTitleBar(selectedNode);
 		switch(mainView.getTabbedPane_treeNodeMediaModules().getSelectedIndex()) {
 		case 0:
-			svcImage.fillImgViewport(selectedNode, mainView.getLbl_imgViewport());
-			svcImage.fillArticleThumbsList(selectedNode, mainView.getList_articleThumbs());
+			imageHandler.fillImgViewport(selectedNode, mainView.getLbl_imgViewport());
+			imageHandler.fillArticleThumbsList(selectedNode, mainView.getList_articleThumbs());
 			break;
 		case 1:
 			break;
@@ -249,8 +256,9 @@ public class MainController extends ViewController {
 	public void updateArticleTitleBar(DefaultMutableTreeNode selectedNode) {
 		Object nodeInfo = selectedNode.getUserObject();
         String selectedArticleNr = nodeInfo.toString();
-        mainView.getLbl_titleBarArtNr().setText(selectedArticleNr);
-        mainView.getLbl_titleBarArtName().setText("");
+        selectedArticle.setNr(selectedArticleNr);
+        mainView.getLbl_titleBarArtNr().setText(selectedArticle.getNr());
+        mainView.getLbl_titleBarArtName().setText(selectedArticle.interrogateArticleName());
 	}
 /**
  ******** A R T I C L E S - B O A R D [End] ****************************************************************************

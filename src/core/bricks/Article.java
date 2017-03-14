@@ -28,7 +28,7 @@ public class Article {
 
 	public String interrogateArticleName() {
 		MySQLHandler dbHandler = new MySQLHandler();
-		String sqlQuery = "SELECT attribute_value FROM pro_attribute_value WHERE product_id = "+this.nr+" AND attribute_value = 10;";
+		String sqlQuery = "SELECT attribute_value FROM pro_attribute_value WHERE product_id = '"+this.nr+"' AND attribute_id = 10;";
 		String[] name = dbHandler.sqlArrayListToStringArray(dbHandler.sqlExecuteQuery(sqlQuery));
 		setName(name[0]);
 		return name[0];
