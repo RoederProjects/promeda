@@ -34,10 +34,10 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.tree.DefaultTreeModel;
 
-import core.handler.media.SvcAttachment;
-import core.handler.media.SvcImage;
-import core.handler.media.SvcLabel;
-import core.handler.media.SvcVideo;
+import core.handler.media.article.AttachmentHandler;
+import core.handler.media.article.ImageHandler;
+import core.handler.media.article.LabelHandler;
+import core.handler.media.article.VideoHandler;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;

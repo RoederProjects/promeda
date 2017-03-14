@@ -136,12 +136,12 @@ public class PsdView extends JPanel {
 			this.clear();
 		}
 		
-		public void setPsd(int witdh, int height, List<PsdLayer> layers) {
+		public void setPsd(int width, int height, List<PsdLayer> layers) {
 			this.layers = layers;
 			this.selection = new boolean[layers.size()];
-			this.width = witdh;
+			this.width = width;
 			this.height = height;
-			setPreferredSize(new Dimension(witdh+100, height+100));
+			setPreferredSize(new Dimension(width+100, height+100));
 			
 		}
 		
